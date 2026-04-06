@@ -6,7 +6,7 @@ class Validator(ABC):
     def __set_name__(self, owner: Any, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, obj: Any, obj_type: Any = None) -> int | str | None:
+    def __get__(self, obj: Any, obj_type: Any = None) -> None:
         return getattr(obj, self.protected_name)
 
     def __set__(self, obj: Any, value: int | str) -> None:
@@ -23,26 +23,26 @@ class Number(Validator):
         self.min_value = min_value
         self.max_value = max_value
 
-    def validate(self, value: int) -> bool:
+    def validate(self, value: int) -> None:
         if not isinstance(value, int):
             raise TypeError("Quantity should be integer.")
         if not (self.min_value <= value <= self.max_value):
-            raise ValueError("Quantity should be less than "
-                             "{self.min_value} and greater "
-                             "than {self.max_value}.")
-        return True
+            raise ValueError(
+                f"Quantity should be less than "
+                f"{self.min_value} and greater "
+                f"than {self.max_value}."
+            )
 
 
 class OneOf(Validator):
     def __init__(self, options: list[str]) -> None:
         self.options = options
 
-    def validate(self, value: str) -> bool:
+    def validate(self, value: str) -> None:
         if value not in self.options:
             raise ValueError(
                 f"Expected {value} to be "
                 f"one of {tuple(self.options)}.")
-        return True
 
 
 class BurgerRecipe:
